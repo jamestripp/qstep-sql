@@ -1,14 +1,14 @@
 # Preparation
 
-Below are instructions for setting up the database and importing the data we will use into the database. You are not required to do this before the session. A remote login will be provided for a university of Warwick server. These instructions are for those who wish to run through the material on their local machine. The instructions are also just in case anything goes wrong and we need to run the class locally. 
+Below are instructions for setting up the database and importing the data we will use into the database. You are not required to do this before the session. A remote login will be provided for a university of Warwick server. These instructions are for those who wish to run through the material on their local machine. 
 
-By the end you will have a database called qstep which contains the table world_borders - including information about the borders of countries - and world_indicators - detailing a few world indicator values. If you have these then you are ready to work through the session materials found elsewhere in this repository.
+By the end you will have a database called qstep which contains the tables world_borders - including information about the borders of countries - and world_indicators - detailing a few world indicator values. If you have these then you are ready to work through the session materials found elsewhere in this repository.
 
 ## Data
 
 Databases store data and allow us to access this data in an effcient manner. Our data of choice is the world borders from the thematic mapping website and World Development Indicators for countries collected by The World Bank. You will need to download all the data as directed below.
 
-Both of the datasets are included in the data_sets folder in this repository. The data is licensed under creative commons, please see the Readme.txt file in the datasets/TM_WORLD_BORDER-0.30 folder and metadata.csv file in datasets/world_development_indicators for more information. My thanks for those who provided the data for adhering to open data access and distribution.
+Both of the datasets are included in the data_sets folder in this repository. The data is licensed under creative commons, please see the Readme.txt file in the datasets/TM_WORLD_BORDER-0.30 folder and metadata.csv file in datasets/world_development_indicators for more information. My thanks to those who provided the data for adhering to open data access and distribution.
 
 ### World borders
 
@@ -35,7 +35,7 @@ The thematic mapping website details the fields of the data as below:
 
 Notice that the data types are either polygon (spatial shape), string (normal text). short integer (e.g., 22), Long Integer (e.g., 43425), double (e.g., 4.32) or float (-33.73).
 
-We can visualisation shape file (and other geospatial data) using a program called [QGIS](https://www.qgis.org/en/site/index.html). We will not focus on QGIS on the session but it is worth being aware of and it can produce [choropleths](https://en.wikipedia.org/wiki/Choropleth_map) with our data like the one shown below, where colour corresponds to 2005 population.
+We can visualise the geo-polygons in a shape file (and other geospatial data) using a program called [QGIS](https://www.qgis.org/en/site/index.html). We will not focus on QGIS on the session but it is worth being aware of and it can produce [choropleths](https://en.wikipedia.org/wiki/Choropleth_map) with our data like the one shown below, where colour corresponds to 2005 population.
 
 <img src="screenshots/world_border_population.png" width="60%"/>
 
@@ -50,6 +50,11 @@ The World Bank has collected information on Development Indicators for many coun
 3. Gross domestic savings (% of GDP)
 4. Labor force, total
 5. Land area (sq. km)
+6. Trade (% of GDP)
+7. GDP (current US$)
+8. Population growth (annual %)
+9. Population, total
+10. Individuals using the Internet (% of population)
 
 and ran the following R code (contained in reformat_data.R) to restructure the data ready for importing into a database.
 
@@ -58,8 +63,7 @@ install.packages('tidyverse')
 
 require(tidyverse)
 
-wdi_data <-
-    read_csv('1_Preparation/datasets/world_development_indicators/data.csv') %>%
+read_csv('1_preparation/datasets/world_development_indicators/data.csv') %>%
     select(
         -`Series Code`,
         country = `Country Name`,
@@ -70,15 +74,20 @@ wdi_data <-
     pivot_wider(names_from = Series, values_from = Value) %>%
     select(
         country,
-        countryCode,
+        country_code = countryCode,
         electricity = `Access to electricity (% of population)`,
         forest_area = `Forest area (% of land area)`,
-        gross_domestic_savings = `Gross domestic savings (% of GDP)`,
-        labor = `Labor force, total`,
-        area = `Land area (sq. km)`
+        land_area = `Land area (sq. km)`,
+        gross_domentic_savings = `Gross domestic savings (% of GDP)`,
+        labor_force = `Labor force, total`,
+        trade = `Trade (% of GDP)`,
+        gdp = `GDP (current US$)`,
+        population_growth = `Population growth (annual %)`,
+        population = `Population, total`,
+        internet_use = `Individuals using the Internet (% of population)`
     ) %>%
     mutate_if(is.character, list( ~ na_if(., ".."))) %>%
-    write_csv('1_Preparation/datasets/world_development_indicators/wide_data.csv')
+    write_csv('1_preparation/datasets/world_development_indicators/wide_data.csv')
 ```
 
 The code turns our long format data
@@ -86,20 +95,33 @@ The code turns our long format data
 | Country Name | Country Code | Series Name                             | Series Code    | 2005 [YR205] |
 |--------------|--------------|-----------------------------------------|----------------|--------------|
 | Afghanistan  | AFG          | Access to electricity (% of population) | EG.ELC.ACCS.ZS | 23           |
-| Afghanistan  | AFG          | Forest area (% of land area)            | AG.LND.FRST.ZS | 2.067824648  |
-| Afghanistan  | AFG          | Gross domestic savings (% of GDP)       | NY.GDS.TOTL.ZS | -33.76417609 |
-| Afghanistan  | AFG          | "Labor force, total"                    | SL.TLF.TOTL.IN | 8607338      |
-| Afghanistan  | AFG          | Land area (sq. km)                      | AG.LND.TOTL.K2 | 652860       |
 | ...          | ...          | ...                                     | ...            | ...          |
 
 into easily importable wide format data with simpler column names. Each country is a single row in the table.
 
- country     | countryCode | electricity | forest_area | gross_domestic_savings | labor   | area   |
-|-------------|:-----------:|-------------|-------------|------------------------|---------|--------|
-| Afghanistan |     AFG     | 23          | 2.067824648 | -33.76417609           | 8607338 | 652860 |
-| ...         |     ...     | ...         | ...         | ...                    | ...     | ...    |
+ country     | countryCode | electricity | forest_area | ... | 
+|-------------|:-----------:|-------------|-------------|------------------------|
+| Afghanistan |     AFG     | 23          | 2.067824648 | ...           | 
+| ...         |     ...     | ...         | ...         | ...                    |
 
 This approach of using wide tables is consistent with the [tidydata](https://tidyr.tidyverse.org/articles/tidy-data.html) approach used in the R community and elsewhere in the data science community. The wide data file is called wide_data.csv and is in the world_development_indicators folder.
+
+For reference, the our cleaner variable names from the wide_data.csv file are shown against the origonal filename.
+
+| wide_data.csv variable name | original variable name                           |
+|-----------------------------|--------------------------------------------------|
+| country                     | country                                          |
+| country_code                | countryCode                                      |
+| electricity                 | Access to electricity (% of population)          |
+| forest_area                 | Forest area (% of land area)                     |
+| land_area                   | Land area (sq. km)                               |
+| gross_domestic_savings      | Gross domestic savings (% of GDP)                |
+| labor_force                 | Labor force, total                               |
+| trade                       | Trade (% of GDP)                                 |
+| gdp                         | GDP (current US$)                                |
+| population_growth           | Population growth (annual %)                     |
+| population                  | Population, total                                |
+| internet_use                | Individuals using the Internet (% of population) |
 
 ## Database installation
 
@@ -166,7 +188,9 @@ You can issue commands to PostgreSQL by clicking on a database name and then goi
 In the Query Tool, one type in a query (command) to the database and then selects to run the query by clicking on Execute.
 <img src="screenshots/windows_postgres8.png" width="50%"/>
 
- Windows users should use Query Tool where I refer to the terminal in the session and commands starting withe a \ will not work - these are commands to the terminal tool called psql, see [the PostgreSQL documentation on psql](https://www.postgresql.org/docs/9.2/app-psql.html).
+The install also comes with a terminal command called psql (see [the PostgreSQL documentation on psql](https://www.postgresql.org/docs/9.2/app-psql.html) for more details). To access this press the Windows key and search for psql.
+
+Windows users are very welcome to use either the pgAdmin query tool or psql.
 
 ## Data upload
 
@@ -237,12 +261,17 @@ You should create the World Indicators table.
 ```sql
 CREATE TABLE world_indicators(
     country varchar(100),
-    countryCode varchar(3),
+    country_code varchar(3),
     electricity double precision,
     forest_area double precision,
+    land_area double precision,
     gross_domestic_savings double precision,
-    labor double precision,
-    area double precision
+    labor_force double precision,
+    trade double precision,
+    gdp double precision,
+    population_growth double precision,
+    population double precision,
+    internet_use double precision
 );
 ```
 
@@ -257,12 +286,17 @@ On MacOS and Linux you can run from
 ```sql
 COPY world_indicators(
     country,
-    countryCode,
+    country_code,
     electricity,
     forest_area,
+    land_area,
     gross_domestic_savings,
-    labor,
-    area
+    labor_force,
+    gdp,
+    trade,
+    population_growth,
+    population,
+    internet_use
 ) 
 FROM '/Users/jamestripp/wide_data.csv'
 with NULL as 'NA' 
@@ -394,21 +428,3 @@ SELECT * FROM world_borders LIMIT 1;
 and the query tool will show you the below.
 
 <img src="screenshots/windows_postgres_import6.png" width="50%"/>
-
-## SQL Dump
-
-One can export the data from the database. To do, once your data is in the PostreSQL database, run
-
-```sh
-pg_dump -O qstep > qstep.sql
-```
-
-The .sql file created is a plain text set of instructions to PostgreSQL. The instructions contain the table definitions and the raw data. In the datasets folder is a file called qstep.sql which contains a dump of the tables created above.
-
-To import the back in simply create a data base and run
-
-```sh
-psql database_name < qstep.sql
-```
-
-then psql will run the SQL commands in the .sql file to recreate the tables. More information about backing up and restoring in postgresql can be found [here](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE).
