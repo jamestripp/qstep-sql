@@ -27,7 +27,7 @@ Solutions to the exercises will be provided after the session.
 
 Throughout the content consider what you would like to find out from the dataset. For example, is there a relationship between access to electricity and trade? Or what impact does internet access have on gdp?
 
-# Userful links
+# Useful links
 
 If you want to continue learning about SQL or Databases in general then you may want to check out:
 
