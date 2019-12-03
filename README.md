@@ -32,13 +32,13 @@ Throughout the content consider what you would like to find out from the dataset
 If you want to continue learning about SQL or Databases in general then you may want to check out:
 
 ## Novice(ish)
-* [PostgreSQL documentation](https://www.postgresql.org/docs/9.1/)
 * [PostgreSQLtutorial.com](http://www.postgresqltutorial.com/)
 * [W3Schools SQL tutorial](https://www.w3schools.com/sql/)
 * [TutorialsPoint PostgreSQL tutorial](https://www.tutorialspoint.com/postgresql/)
 
 ## For the nerdy
 * [Database Systems Concepts](https://www.amazon.co.uk/Database-System-Concepts-Intl-Ed/dp/0071289593/ref=sr_1_2?keywords=database+systems+concepts&qid=1575231670&sr=8-2) which is available at the Warwick University library
+* [PostgreSQL documentation](https://www.postgresql.org/docs/9.1/)
 
 ## Nifty, but a little complex
 * [SQL 10 tricks](https://blog.jooq.org/2016/04/25/10-sql-tricks-that-you-didnt-think-were-possible/) - Quite advanced but interesting collection of fun features of SQL
