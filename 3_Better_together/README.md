@@ -31,6 +31,28 @@ SELECT ROUND(function_name(column_name)::numeric,2) FROM table_name;
 2. How many countries are there with a labor force greater than 10000?
 3. What is the average of the labor force column rounded to 3 decimal places?
 
+#### Solutions
+
+#### 1
+
+```sql
+SELECT AVG(labor_force) FROM world_indicators;
+```
+
+#### 2
+
+```sql
+SELECT COUNT(country)
+FROM world_indicators
+WHERE labor_force > 10000 AND labor_force IS NOT NULL;
+```
+
+#### 3
+
+```sql
+SELECT ROUND(AVG(labor_force)::numeric,3) FROM world_indicators;
+```
+
 ## Group by
 
 The above give us a single value. But we may be interested the in the labor of countries with a high area. How can we do this?
@@ -84,6 +106,53 @@ Hmm, can anyone tell me what the AS keyword just did?
 3. Set the value in that column to 'yes' if the value of electricity is above average and 'no' if it is not.
 4. Print out the country name and the gdp columns where the amount of electricity is above average.
 
+#### Solutions
+
+##### 1
+
+```sql
+CREATE TABLE jamestripp_world_indicators AS
+TABLE world_indicators;
+```
+
+##### 2
+
+```sql
+ALTER TABLE jamestripp_world_indicators
+ADD COLUMN above_avg_electricity varchar(30);
+```
+
+##### 3
+
+First we will get the average electricity.
+
+```sql
+SELECT AVG(electricity) FROM jamestripp_world_indicators;
+```
+
+Ok, so the average is 76.9340705429272.
+
+Set the above_avg_electricity column values
+
+```sql
+UPDATE jamestripp_world_indicators 
+SET above_avg_electricity = 'no'
+WHERE electricity <= 76.9340705429272;
+```
+
+```sql
+UPDATE jamestripp_world_indicators 
+SET above_avg_electricity = 'yes'
+WHERE electricity > 76.9340705429272;
+```
+
+##### 4
+
+```sql
+SELECT country, gdp
+FROM jamestripp_world_indicators
+WHERE above_avg_electricity = 'yes';
+```
 ## Aggregate statistical functions
 
 PostgreSQL supports some basic statistical functions (see [here](https://www.postgresql.org/docs/9.5/functions-aggregate.html)). Functions you might be familiar with are correlation and those related to a least squares linear model.
@@ -121,6 +190,23 @@ GROUP BY area_classification;
 
 1. Find out if there is a relationship between electricity and land_area.
 2. What are the advantages and disadvantages of doing statistical analysis via SQL?
+
+#### Solutions
+
+##### 1
+
+A simple correlation may work. 
+
+```sql
+SELECT CORR(electricity, land_area)
+FROM world_indicators;
+```
+
+It looks unlikely there is a relationship - the soefficient is 0.013.
+
+##### 2
+
+We cannot plot the data in SQL. This makes it difficult to investigate the relationship. In particular, linear models and correlations have assumptions we cannot test. Also you may want to check what type of correlation SQL is running.
 
 ## Joins
 
@@ -163,3 +249,18 @@ Run an inner join that solves out data issue. Create a new table which contains 
 How might you verify this solves our issue?
 
 You will use this table in the next section.
+
+#### Solution
+
+```sql
+CREATE TABLE jamestripp_data AS 
+SELECT * FROM world_indicators
+INNER JOIN world_borders
+ON world_indicators.country_code = world_borders.iso3;
+```
+
+You could check by just printing out the country names and running through them.
+
+```sql
+SELECT country FROM jamestripp_data;
+```
