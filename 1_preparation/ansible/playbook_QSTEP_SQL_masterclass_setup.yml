@@ -1,0 +1,93 @@
+---
+
+# Install the galaxy modules via ansible-galaxy collection install community.general
+
+- hosts: multipass
+  tasks:
+    - name: Update and upgrade packages via apt 
+      become: true
+      apt:
+        upgrade: "yes"
+        update_cache: yes
+
+    - name: Install any updates
+      become: true
+      apt:
+        name: aptitude
+
+    - name: Postgres and PostGIS
+      become: true
+      package:
+        name: postgis
+        state: present
+
+    - name: Install libpq dev for posgis ansible modules
+      become: true
+      package:
+        name: libpq-dev
+        state: present
+
+    - name: Install acl for nonprivilaged postgres user access
+      become: true
+      package:
+        name: acl
+        state: present
+
+    - name: Create qstep group
+      become: true
+      group:
+        name: qstep
+        state: present
+
+    - name: QSTEP user
+      become: true
+      user:
+        name: qstep
+        comment: QSTEP user
+        group: sudo
+        shell: /bin/bash
+        password: "$6$oncetherewasaway$c8l1bYnCnRLbH4BEF5cBs7Lh8epAqeD.amZMcEtixuu2lqpFc1LTa/4Lw1ke79WayeLvXa7.QQBvuvAdJh7ou0"
+
+    - name: Pip available
+      become: true
+      apt:
+        name: python3-pip
+
+    - name: Get python package for managing postgis
+      become: true
+      pip:
+        name: psycopg2
+
+    - name: create a database
+      postgresql_db:
+        name: qstep
+        encoding: UTF-8
+        template: template0
+        state: present
+      become_user: postgres
+      become: yes
+
+    - name: Adds postgis extension to the database qstep
+      community.general.postgresql_ext:
+        name: postgis
+        db: qstep
+      become_user: postgres
+      become: yes
+
+    - name: Create QSTEP user in Postgres with access to qstep database
+      community.general.postgresql_user:
+        name: qstep
+        password: "qstepdbuser"
+        role_attr_flags: "SUPERUSER"
+      become_user: postgres
+      become: yes
+
+    - name: Copy file with owner and permissions
+      copy:
+        src: ../datasets/qstep.sql
+        dest: /tmp/qstep.sql
+
+    - name: Importing qstep table
+      become_user: postgres
+      become: yes
+      shell: psql qstep < /tmp/qstep.sql
