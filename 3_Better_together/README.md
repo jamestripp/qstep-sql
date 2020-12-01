@@ -31,28 +31,6 @@ SELECT ROUND(function_name(column_name)::numeric,2) FROM table_name;
 2. How many countries are there with a labor force greater than 10000?
 3. What is the average of the labor force column rounded to 3 decimal places?
 
-#### Solutions
-
-#### 1
-
-```sql
-SELECT AVG(labor) FROM world_indicators;
-```
-
-#### 2
-
-```sql
-SELECT COUNT(country)
-FROM world_indicators
-WHERE labor > 10000 AND labor IS NOT NULL;
-```
-
-#### 3
-
-```sql
-SELECT ROUND(AVG(labor)::numeric,3) FROM world_indicators;
-```
-
 ## Group by
 
 The above give us a single value. But we may be interested in the labor of countries with a high area. How can we do this?
@@ -106,54 +84,6 @@ Hmm, can anyone tell me what the AS keyword just did?
 2. Create a new column in your new table called above_avg_electricity.
 3. Set the value in that column to 'yes' if the value of electricity is above average and 'no' if it is not.
 4. Print out the country name and the gross_domestic_savings columns where the amount of electricity is above average.
-
-#### Solutions
-
-##### 1
-
-```sql
-CREATE TABLE jamestripp_world_indicators AS
-TABLE world_indicators;
-```
-
-##### 2
-
-```sql
-ALTER TABLE jamestripp_world_indicators
-ADD COLUMN above_avg_electricity varchar(30);
-```
-
-##### 3
-
-First we will get the average electricity.
-
-```sql
-SELECT AVG(electricity) FROM jamestripp_world_indicators;
-```
-
-Ok, so the average is 76.9340705429272.
-
-Set the above_avg_electricity column values
-
-```sql
-UPDATE jamestripp_world_indicators 
-SET above_avg_electricity = 'no'
-WHERE electricity <= 76.9340705429272;
-```
-
-```sql
-UPDATE jamestripp_world_indicators 
-SET above_avg_electricity = 'yes'
-WHERE electricity > 76.9340705429272;
-```
-
-##### 4
-
-```sql
-SELECT country, gross_domestic_savings
-FROM jamestripp_world_indicators
-WHERE above_avg_electricity = 'yes';
-```
 
 ## Aggregate statistical functions
 
