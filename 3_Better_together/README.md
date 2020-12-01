@@ -36,7 +36,7 @@ SELECT ROUND(function_name(column_name)::numeric,2) FROM table_name;
 #### 1
 
 ```sql
-SELECT AVG(labor_force) FROM world_indicators;
+SELECT AVG(labor) FROM world_indicators;
 ```
 
 #### 2
@@ -44,18 +44,18 @@ SELECT AVG(labor_force) FROM world_indicators;
 ```sql
 SELECT COUNT(country)
 FROM world_indicators
-WHERE labor_force > 10000 AND labor_force IS NOT NULL;
+WHERE labor > 10000 AND labor IS NOT NULL;
 ```
 
 #### 3
 
 ```sql
-SELECT ROUND(AVG(labor_force)::numeric,3) FROM world_indicators;
+SELECT ROUND(AVG(labor)::numeric,3) FROM world_indicators;
 ```
 
 ## Group by
 
-The above give us a single value. But we may be interested the in the labor of countries with a high area. How can we do this?
+The above give us a single value. But we may be interested in the labor of countries with a high area. How can we do this?
 
 Add a column
 
@@ -69,7 +69,7 @@ set the value of the column to 'high area' when area is greater than the average
 Get the average area.
 
 ```sql
-SELECT AVG(land_area) FROM world_indicators;
+SELECT AVG(area) FROM world_indicators;
 ```
 
 Set the high area values.
@@ -77,14 +77,15 @@ Set the high area values.
 ```sql
 UPDATE world_indicators 
 SET area_classification = 'high area'
-WHERE land_area > 5001559;
+WHERE area > 5001559;
 ```
+
 Set the low area values
 
 ```sql
 UPDATE world_indicators 
 SET area_classification = 'low area'
-WHERE land_area <= 5001559;
+WHERE area <= 5001559;
 ```
 
 What did the above do?
@@ -92,7 +93,7 @@ What did the above do?
 We can then look at the aggregate statistics for low and high area countries.
 
 ```sql
-SELECT area_classification, round(AVG(labor_force)::numeric,2) AS average_labor
+SELECT area_classification, round(AVG(labor)::numeric,2) AS average_labor
 FROM world_indicators
 GROUP BY area_classification;
 ```
@@ -104,7 +105,7 @@ Hmm, can anyone tell me what the AS keyword just did?
 1. Create your own copy of the world_indicators table called yourname_world_indicators where yourname is your own name. If table exists then run DROP TABLE yourname_world_indicators; first.
 2. Create a new column in your new table called above_avg_electricity.
 3. Set the value in that column to 'yes' if the value of electricity is above average and 'no' if it is not.
-4. Print out the country name and the gdp columns where the amount of electricity is above average.
+4. Print out the country name and the gross_domestic_savings columns where the amount of electricity is above average.
 
 #### Solutions
 
@@ -149,10 +150,11 @@ WHERE electricity > 76.9340705429272;
 ##### 4
 
 ```sql
-SELECT country, gdp
+SELECT country, gross_domestic_savings
 FROM jamestripp_world_indicators
 WHERE above_avg_electricity = 'yes';
 ```
+
 ## Aggregate statistical functions
 
 PostgreSQL supports some basic statistical functions (see [here](https://www.postgresql.org/docs/9.5/functions-aggregate.html)). Functions you might be familiar with are correlation and those related to a least squares linear model.
@@ -160,7 +162,7 @@ PostgreSQL supports some basic statistical functions (see [here](https://www.pos
 If we want to look at the relationship between labor and area.
 
 ```sql
-SELECT round(CORR(labor_force, land_area)::numeric,2)
+SELECT round(CORR(labor, area)::numeric,2)
 FROM world_indicators;
 ```
 
@@ -169,7 +171,7 @@ And how about if we split the data into low and high area?
 ```sql
 SELECT 
     area_classification, 
-    round(CORR(labor_force, land_area)::numeric,2) AS corr_coeff
+    round(CORR(labor, area)::numeric,2) AS corr_coeff
 FROM world_indicators
 GROUP BY area_classification;
 ```
@@ -179,9 +181,9 @@ We can even get the slope and intercepts from linear models for each group.
 ```sql
 SELECT 
     area_classification, 
-    round(CORR(labor_force, land_area)::numeric,2) AS corr_coeff, 
-    round(regr_intercept(labor_force, land_area)::numeric,2) AS intercept, 
-    round(regr_slope(labor_force, land_area)::numeric,2) AS slope
+    round(CORR(labor, area)::numeric,2) AS corr_coeff, 
+    round(regr_intercept(labor, area)::numeric,2) AS intercept, 
+    round(regr_slope(labor, area)::numeric,2) AS slope
 FROM world_indicators
 GROUP BY area_classification;
 ```
@@ -198,11 +200,11 @@ GROUP BY area_classification;
 A simple correlation may work. 
 
 ```sql
-SELECT CORR(electricity, land_area)
+SELECT CORR(electricity, area)
 FROM world_indicators;
 ```
 
-It looks unlikely there is a relationship - the soefficient is 0.013.
+It looks unlikely there is a relationship - the coefficient is 0.013.
 
 ##### 2
 
@@ -215,9 +217,9 @@ There is a problem with our data set. Can anyone guess what it is?
 We want a dataset which contains information about contries. However, what do you see?
 
 ```sql
-SELECT country, country_code
+SELECT country, countrycode
 FROM world_indicators
-WHERE land_area > 6000000;
+WHERE area > 6000000;
 ```
 
 We do have another dataset
@@ -242,6 +244,13 @@ Our two tables have a column in common. Which common is this and how should we j
 
 There are other types of join. If you want to investigate those then two very useful tutorials are [here](http://www.postgresqltutorial.com/postgresql-joins/) and [here](https://www.tutorialspoint.com/postgresql/postgresql_using_joins.htm).
 
+Both tables have a data column. If you try and join the tables then Postgres will complain. A simple way to fix this is to drop the column entirely. You all share databases, so I suggest you try to delte the column using the following query. If you hit an error then that probably because someone else has already carried out the operation.
+
+```sql
+ALTER TABLE world_indicators
+DROP COLUMN area;
+```
+
 ### Your Turn
 
 Run an inner join that solves out data issue. Create a new table which contains the countries and variables. Call this table yourname_data.
@@ -256,7 +265,7 @@ You will use this table in the next section.
 CREATE TABLE jamestripp_data AS 
 SELECT * FROM world_indicators
 INNER JOIN world_borders
-ON world_indicators.country_code = world_borders.iso3;
+ON world_indicators.countrycode = world_borders.iso3;
 ```
 
 You could check by just printing out the country names and running through them.

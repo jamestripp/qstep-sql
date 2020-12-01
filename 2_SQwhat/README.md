@@ -3,8 +3,8 @@
 You will:
 
 * Connect to a PostgreSQL database
-* Query the database using the SELECT, WHERE, FROM, LIMIT and ORDER BY keywords
-* Manage tables using the CREATE TABLE, DROP TABLE and AS TABLE keywords
+* Query the database using the [SELECT](https://www.w3schools.com/sql/sql_select.asp), [WHERE](https://www.w3schools.com/sql/sql_where.asp), [FROM](https://www.w3schools.com/sql/sql_ref_from.asp), [LIMIT](https://www.w3schools.com/sql/sql_top.asp) and [ORDER BY](https://www.w3schools.com/sql/sql_orderby.asp) keywords
+* Manage tables using the [CREATE TABLE](https://www.w3schools.com/sql/sql_create_table.asp), [DROP TABLE](https://www.w3schools.com/sql/sql_drop_table.asp) and AS TABLE keywords
 
 ## Connecting to PostgreSQL
 
@@ -58,7 +58,7 @@ You will eventually be shown the psql interface. From this command prompt you ca
 
 ### You will connect to the CIM server
 
-QSTEP masterclass students are able to connect to a database hosted on a CIM server. If you attend the QSTEP masterclass then go to [this link](https://warwick.ac.uk/fac/cross_fac/cim/people/academic-technology/qstep-sql/) to see your username, password and the location of the server.
+QSTEP masterclass students are able to connect to a database hosted on a CIM server. If you attend the QSTEP masterclass then James will provide your username, password and the location of the server.
 
 This guide is publically available so I will refer to the server as servername.warwick.ac.uk, the user as qstepuser and the password as thispassword. Please insert the values from the link above when doing this in the masterclass.
 
@@ -71,7 +71,7 @@ ssh qstepuser@servername.warwick.ac.uk
 You will then be prompted to enter the password. When you type nothing will be shown, this is fine, and then press enter. You should then be logged into the server and see something like the below in the terminal.
 
 ```sh
-psql (9.5.19)
+psql (12.5 (Ubuntu 12.5-0ubuntu0.20.04.1))
 Type "help" for help.
 
 postgres=#
@@ -105,7 +105,7 @@ You are now ready to type in some SQL and get data from our database.
 To return all the data in the area column of the world_indicators table
 
 ```sql
-SELECT land_area FROM world_indicators;
+SELECT area FROM world_indicators;
 ```
 
 which will return 265 values from our dataset. If you are using psql then you can press q to return to the psql command prompt.
@@ -129,7 +129,7 @@ SELECT column_name1, column_name2 FROM table_name;
 We may not want all the data. Instead, we specify a limit on the number of data points returned.
 
 ```sql
-SELECT land_area FROM world_indicators LIMIT 5;
+SELECT area FROM world_indicators LIMIT 5;
 ```
 
 Will return the first 5 values of the area column in world_indicators table.
@@ -203,7 +203,7 @@ psql qstep
 ###### 3
 
 ```sql
-SELECT country, forest_area, labor_force FROM world_indicators LIMIT 5;
+SELECT country, area, labor FROM world_indicators LIMIT 5;
 ```
 
 #### WHERE
@@ -213,7 +213,7 @@ One way to filter our data is using WHERE to specify logical requirements for th
 What do you think the following will do?
 
 ```sql
-SELECT country FROM world_indicators WHERE land_area > 20000000;
+SELECT country FROM world_indicators WHERE area > 20000000;
 ```
 
 The structure of this type of query is
@@ -229,7 +229,7 @@ You can include logical operators too (see the logical operators documentation [
  What do you think this will do?
 
 ```sql
-SELECT country FROM world_indicators WHERE land_area < 10000000 AND labor_force > 100;
+SELECT country FROM world_indicators WHERE area < 10000000 AND labor > 100;
 ```
 
 The structure here is
@@ -279,13 +279,13 @@ SELECT country FROM world_indicators LIMIT 15;
 ###### 2
 
 ```sql
-SELECT country FROM world_indicators WHERE labor_force > 800000;
+SELECT country FROM world_indicators WHERE labor > 800000;
 ```
 
 ###### 3
 
 ```sql
-SELECT country FROM world_indicators WHERE labor_force > 800000 AND land_area > 10000000;
+SELECT country FROM world_indicators WHERE labor > 800000 AND area > 10000000;
 ```
 
 ###### 4
@@ -301,28 +301,28 @@ What if we want to order the countries by labor, electricity or another column?
 Hmmm. What do you think the below does?
 
 ```sql
-SELECT country, labor_force 
+SELECT country, labor 
 FROM world_indicators 
-ORDER BY labor_force ASC
+ORDER BY labor ASC
 LIMIT 5;
 ```
 
 What about this one?
 
 ```sql
-SELECT country, labor_force 
+SELECT country, labor 
 FROM world_indicators
-ORDER BY labor_force DESC
+ORDER BY labor DESC
 LIMIT 50;
 ```
 
 Is there anything unusual about the output of the above? Why does the below give you better results?
 
 ```sql
-SELECT country, labor_force 
+SELECT country, labor 
 FROM world_indicators
-WHERE labor_force IS NOT NULL 
-ORDER BY labor_force DESC
+WHERE labor IS NOT NULL 
+ORDER BY labor DESC
 LIMIT 50;
 ```
 
@@ -358,7 +358,7 @@ LIMIT 5;
 Labor force of the countries with the 10 lowest of the population with access to electricity.
 
 ```sql
-SELECT country, labor_force
+SELECT country, labor
 FROM world_indicators
 ORDER BY electricity ASC
 LIMIT 10;
@@ -396,13 +396,14 @@ We can check our table exists.
 ```sql
 qstep=# \dt
               List of relations
- Schema |       Name       | Type  |  Owner
+ Schema |       Name       | Type  |  Owner   
 --------+------------------+-------+----------
- public | people           | table | postgres
+ public | people           | table | qstep
+ public | qstep            | table | postgres
  public | spatial_ref_sys  | table | postgres
  public | world_borders    | table | postgres
  public | world_indicators | table | postgres
-(4 rows)
+(5 rows)
 ```
 
 The above table is like any other. We can query the contents easily.
@@ -471,7 +472,7 @@ Or save the output of a query into a new table.
 
 ```sql
 CREATE TABLE country_labor AS 
-SELECT country, labor_force
+SELECT country, labor
 FROM world_indicators;
 ```
 
@@ -479,10 +480,10 @@ Which creates a new table called country_labor containing the columns country an
 
 ```sql
 qstep=# SELECT * FROM country_labor LIMIT 2;
-   country   | labor_force 
--------------+-------------
- Afghanistan |     8607338
- Albania     |     1281634
+   country   |  labor  
+-------------+---------
+ Afghanistan | 8607338
+ Albania     | 1281634
 (2 rows)
 ```
 
@@ -536,7 +537,7 @@ SELECT * FROM james;
 CREATE TABLE jamestripp_world_indicators AS 
 SELECT *
 FROM world_indicators
-WHERE labor_force > 8000000;
+WHERE labor > 8000000;
 ```
 
 One can check the data via
