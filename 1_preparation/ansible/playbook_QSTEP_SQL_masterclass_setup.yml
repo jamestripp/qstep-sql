@@ -44,7 +44,7 @@
       user:
         name: qstep
         comment: QSTEP user
-        group: qstep
+        group: sudo
         shell: /bin/bash
         password: "$6$oncetherewasaway$c8l1bYnCnRLbH4BEF5cBs7Lh8epAqeD.amZMcEtixuu2lqpFc1LTa/4Lw1ke79WayeLvXa7.QQBvuvAdJh7ou0"
 
@@ -91,53 +91,3 @@
       become_user: postgres
       become: yes
       shell: psql qstep < /tmp/qstep.sql
-
-# Extra time datasets (uncomment to run)
-# Note: The demo-small-en-20170815.sql.zip file needs to be extracted first
-
-    # - name: deletes demo database if exists
-    #   postgresql_db:
-    #     name: demo
-    #     encoding: UTF-8
-    #     template: template0
-    #     state: absent
-    #   become_user: postgres
-    #   become: yes
-
-    # - name: create demo database
-    #   postgresql_db:
-    #     name: demo
-    #     encoding: UTF-8
-    #     template: template0
-    #     state: present
-    #   become_user: postgres
-    #   become: yes
-
-    # - name: create rentals database
-    #   postgresql_db:
-    #     name: dvdrental
-    #     encoding: UTF-8
-    #     template: template0
-    #     state: present
-    #   become_user: postgres
-    #   become: yes
-
-    # - name: Copy flights database file
-    #   copy:
-    #     src: ../datasets/demo-small-en-20170815.sql
-    #     dest: /tmp/demo-small-en-20170815.sql
-
-    # - name: Copy dvd rental database file
-    #   copy:
-    #     src: ../datasets/dvdrental.sql
-    #     dest: /tmp/dvdrental.sql
-
-    # - name: Importing flights database
-    #   become_user: postgres
-    #   become: yes
-    #   shell: psql demo < /tmp/demo-small-en-20170815.sql
-
-    # - name: Importing dvdrentals database
-    #   become_user: postgres
-    #   become: yes
-    #   shell: psql dvdrental < /tmp/dvdrental.sql
