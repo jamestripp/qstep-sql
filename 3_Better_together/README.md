@@ -123,23 +123,6 @@ GROUP BY area_classification;
 1. Find out if there is a relationship between electricity and land_area.
 2. What are the advantages and disadvantages of doing statistical analysis via SQL?
 
-#### Solutions
-
-##### 1
-
-A simple correlation may work. 
-
-```sql
-SELECT CORR(electricity, area)
-FROM world_indicators;
-```
-
-It looks unlikely there is a relationship - the coefficient is 0.013.
-
-##### 2
-
-We cannot plot the data in SQL. This makes it difficult to investigate the relationship. In particular, linear models and correlations have assumptions we cannot test. Also you may want to check what type of correlation SQL is running.
-
 ## Joins
 
 There is a problem with our data set. Can anyone guess what it is?
@@ -188,18 +171,3 @@ Run an inner join that solves out data issue. Create a new table which contains 
 How might you verify this solves our issue?
 
 You will use this table in the next section.
-
-#### Solution
-
-```sql
-CREATE TABLE jamestripp_data AS 
-SELECT * FROM world_indicators
-INNER JOIN world_borders
-ON world_indicators.countrycode = world_borders.iso3;
-```
-
-You could check by just printing out the country names and running through them.
-
-```sql
-SELECT country FROM jamestripp_data;
-```

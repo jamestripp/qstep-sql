@@ -178,34 +178,6 @@ The best way to learn how to use SQL is, well, to use SQL. Try and do the below 
 
 Raise your hand if you have issues connecting to or using the database.
 
-##### Solutions
-
-###### 1
-
-Either from the psql prompt
-
-```sql
-\c qstep
-```
-
-or the terminal
-
-```sh
-psql qstep
-```
-
-###### 2
-
-```sql
-\dt
-```
-
-###### 3
-
-```sql
-SELECT country, area, labor FROM world_indicators LIMIT 5;
-```
-
 #### WHERE
 
 One way to filter our data is using WHERE to specify logical requirements for the results.
@@ -268,30 +240,6 @@ SELECT * FROM world_indicators WHERE country = 'United Kingdom';
 3. Which countries have a labor_force score of above 800000 and a land_area greater than 10000000.
 4. Are there any issues with our dataset? Are there any strange entries?
 
-##### Solutions
-
-###### 1
-
-```sql
-SELECT country FROM world_indicators LIMIT 15;
-```
-
-###### 2
-
-```sql
-SELECT country FROM world_indicators WHERE labor > 800000;
-```
-
-###### 3
-
-```sql
-SELECT country FROM world_indicators WHERE labor > 800000 AND area > 10000000;
-```
-
-###### 4
-
-Our dataset includes countries and groups of countries. For example, our data includes 'High Income', 'World' and 'OECD Members'. Before carrying out details analysis we should remove these groups of countries.
-
 #### ORDER, ORDER!
 
 The order of the above output is by table order. The first entry in the table comes out first. That is not idea.
@@ -331,49 +279,6 @@ LIMIT 50;
 1. Which 5 countries have the least % of population with access electricity? Can you find the top 5 countries with the most access to electricity? 
 2. How much labor force do the 10 countries with the least electicity have?
 3. Order the countries by gross domestic savings. What do you notice?
-
-##### 1
-
-Five countries with least electricity.
-
-```sql
-SELECT country, electricity
-FROM world_indicators
-ORDER BY electricity ASC 
-LIMIT 5;
-```
-
-Five countries with most electricity... Well, many countries will have 100% of population with electricity so we hit a ceiling of many countries with all their population having access to electricity.
-
-```sql
-SELECT country, electricity
-FROM world_indicators
-WHERE electricity IS NOT NULL
-ORDER BY electricity DESC 
-LIMIT 5;
-```
-
-##### 2
-
-Labor force of the countries with the 10 lowest of the population with access to electricity.
-
-```sql
-SELECT country, labor
-FROM world_indicators
-ORDER BY electricity ASC
-LIMIT 10;
-```
-
-##### 3
-
-Country names ordered by gross domestic savings.
-
-```sql
-SELECT country, gross_domestic_savings
-FROM world_indicators
-ORDER BY gross_domestic_savings ASC;
-```
-We have a few null values and, oddly enough, the UK is not very high in those rankings. The data is from 2005 (pre financial crisis). Perhaps things are better now?
 
 ## Creation
 
