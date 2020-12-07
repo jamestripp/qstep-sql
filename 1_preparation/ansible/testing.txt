@@ -1,6 +1,7 @@
 [multipass]
-Machine location
+server location
 
 [multipass:vars]
-ansible_user=user
-ansible_become_pass=password
+ansible_user=username
+#ansible_password=
+ansible_become_pass=

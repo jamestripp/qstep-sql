@@ -39,14 +39,52 @@
         name: qstep
         state: present
 
+    # - name: set CIM user details
+    #   become: true
+    #   user:
+    #     name: cim
+    #     comment: CIM user
+    #     group: sudo
+    #     shell: /bin/bash
+    #     password: "$6$oncetherewasaway$c8l1bYnCnRLbH4BEF5cBs7Lh8epAqeD.amZMcEtixuu2lqpFc1LTa/4Lw1ke79WayeLvXa7.QQBvuvAdJh7ou0"
+
     - name: QSTEP user
       become: true
       user:
         name: qstep
         comment: QSTEP user
         group: qstep
-        shell: /bin/bash
+        shell: /bin/rbash
         password: "$6$oncetherewasaway$c8l1bYnCnRLbH4BEF5cBs7Lh8epAqeD.amZMcEtixuu2lqpFc1LTa/4Lw1ke79WayeLvXa7.QQBvuvAdJh7ou0"
+
+    - name: Create bin directory for qstep user
+      become: true
+      file:
+        path: /home/qstep/bin
+        state: directory
+        mode: '0755'
+        
+    - name: Touch local bin file
+      become: true
+      shell: touch /home/qstep/.bashrc
+
+    - name: Change qstep path to local bin
+      become: true
+      shell: echo "PATH=/home/qstep/bin" >> /home/qstep/.bashrc
+
+    - name: Export path change
+      become: true
+      shell: echo "export PATH" >> /home/qstep/.bashrc
+
+    # - name: Create syslink to the psql binary to prevent users accessing anything else
+    #   become: true
+    #   shell: ln -s /bin/psql /home/qstep/bin/
+
+    # - name: Ensure qstep bashrc is immutable.
+    #   become: true
+    #   file:
+    #     path: /home/qstep/.bashrc
+    #     attr: i    
 
     - name: Pip available
       become: true
@@ -56,7 +94,21 @@
     - name: Get python package for managing postgis
       become: true
       pip:
+        name: setuptools
+
+    - name: Get python package for managing postgis
+      become: true
+      pip:
         name: psycopg2
+
+    - name: drop a database
+      postgresql_db:
+        name: qstep
+        encoding: UTF-8
+        template: template0
+        state: absent
+      become_user: postgres
+      become: yes
 
     - name: create a database
       postgresql_db:
@@ -95,49 +147,59 @@
 # Extra time datasets (uncomment to run)
 # Note: The demo-small-en-20170815.sql.zip file needs to be extracted first
 
-    # - name: deletes demo database if exists
-    #   postgresql_db:
-    #     name: demo
-    #     encoding: UTF-8
-    #     template: template0
-    #     state: absent
-    #   become_user: postgres
-    #   become: yes
+    - name: deletes demo database if exists
+      postgresql_db:
+        name: demo
+        encoding: UTF-8
+        template: template0
+        state: absent
+      become_user: postgres
+      become: yes
 
-    # - name: create demo database
-    #   postgresql_db:
-    #     name: demo
-    #     encoding: UTF-8
-    #     template: template0
-    #     state: present
-    #   become_user: postgres
-    #   become: yes
+    - name: create demo database
+      postgresql_db:
+        name: demo
+        encoding: UTF-8
+        template: template0
+        state: present
+      become_user: postgres
+      become: yes
 
-    # - name: create rentals database
-    #   postgresql_db:
-    #     name: dvdrental
-    #     encoding: UTF-8
-    #     template: template0
-    #     state: present
-    #   become_user: postgres
-    #   become: yes
+    - name: deletes rentals database if exists
+      postgresql_db:
+        name: dvdrental
+        encoding: UTF-8
+        template: template0
+        state: absent
+      become_user: postgres
+      become: yes
 
-    # - name: Copy flights database file
-    #   copy:
-    #     src: ../datasets/demo-small-en-20170815.sql
-    #     dest: /tmp/demo-small-en-20170815.sql
+    - name: create rentals database
+      postgresql_db:
+        name: dvdrental
+        encoding: UTF-8
+        template: template0
+        state: present
+      become_user: postgres
+      become: yes
 
-    # - name: Copy dvd rental database file
-    #   copy:
-    #     src: ../datasets/dvdrental.sql
-    #     dest: /tmp/dvdrental.sql
+    - name: Copy flights database file
+      copy:
+        src: ../datasets/demo-small-en-20170815.sql
+        dest: /tmp/demo-small-en-20170815.sql
 
-    # - name: Importing flights database
-    #   become_user: postgres
-    #   become: yes
-    #   shell: psql demo < /tmp/demo-small-en-20170815.sql
+    - name: Copy dvd rental database file
+      copy:
+        src: ../datasets/dvdrental.sql
+        dest: /tmp/dvdrental.sql
 
-    # - name: Importing dvdrentals database
-    #   become_user: postgres
-    #   become: yes
-    #   shell: psql dvdrental < /tmp/dvdrental.sql
+    - name: Importing flights database
+      become_user: postgres
+      become: yes
+      shell: psql demo < /tmp/demo-small-en-20170815.sql
+
+    - name: Importing dvdrentals database
+      become_user: postgres
+      become: yes
+      shell: psql dvdrental < /tmp/dvdrental.sql
+
