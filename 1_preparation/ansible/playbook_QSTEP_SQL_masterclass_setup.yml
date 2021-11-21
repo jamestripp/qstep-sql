@@ -54,27 +54,8 @@
         name: qstep
         comment: QSTEP user
         group: qstep
-        shell: /bin/rbash
-        password: "$6$oncetherewasaway$c8l1bYnCnRLbH4BEF5cBs7Lh8epAqeD.amZMcEtixuu2lqpFc1LTa/4Lw1ke79WayeLvXa7.QQBvuvAdJh7ou0"
-
-    - name: Create bin directory for qstep user
-      become: true
-      file:
-        path: /home/qstep/bin
-        state: directory
-        mode: '0755'
-        
-    - name: Touch local bin file
-      become: true
-      shell: touch /home/qstep/.bashrc
-
-    - name: Change qstep path to local bin
-      become: true
-      shell: echo "PATH=/home/qstep/bin" >> /home/qstep/.bashrc
-
-    - name: Export path change
-      become: true
-      shell: echo "export PATH" >> /home/qstep/.bashrc
+        shell: /bin/bash
+        password: "$6$oncetherewasaway$5dL3SAEH74q6rqsKUXVwg3URUcVhxL7ozuwEr1tyyln7Et68r.6zDtPblOCmqlWS/TJZlQhtY1jtmEh3FvCUJ."
 
     # - name: Create syslink to the psql binary to prevent users accessing anything else
     #   become: true
@@ -120,14 +101,14 @@
       become: yes
 
     - name: Adds postgis extension to the database qstep
-      community.general.postgresql_ext:
+      community.postgresql.postgresql_ext:
         name: postgis
         db: qstep
       become_user: postgres
       become: yes
 
     - name: Create QSTEP user in Postgres with access to qstep database
-      community.general.postgresql_user:
+      community.postgresql.postgresql_user:
         name: qstep
         password: "qstepdbuser"
         role_attr_flags: "SUPERUSER"
