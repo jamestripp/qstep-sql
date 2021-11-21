@@ -1,12 +1,12 @@
 # QSTEP Masterclass: Structured Query Language
 
-This repository contains materials from a QSTEP Masterclass on SQL designed and delivered by [James Tripp](https://www.warwick.ac.uk/jamestripp) on 1st December 2020.
+This repository contains materials from a QSTEP Masterclass on SQL designed and delivered by [James Tripp](https://www.warwick.ac.uk/jamestripp) on 25th of November 2021.
 
 The structure of the day is as follows:
 
 | Time          | Session                                    |
 |---------------|--------------------------------------------|
-| 9:15  - 10:45 | Introduction. Connecting to a database.    |
+| 9:30  - 10:45 | Introduction. Connecting to a database.    |
 | 10:45 - 11:00 | Break                                      |
 | 11:00 - 12:30 | Querying databases to address questions    |
 | 12:30 - 13:15 | Lunch                                      |
