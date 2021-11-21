@@ -344,7 +344,7 @@ and insert some data into it
 
 ```sql
 INSERT INTO people (fullname, age)
-VALUES ('James Tripp', 34);
+VALUES ('James Tripp', 36);
 ```
 
 and check it looks sane.
@@ -353,7 +353,7 @@ and check it looks sane.
 qstep=# SELECT * FROM people;
   fullname   | age
 -------------+-----
- James Tripp |  34
+ James Tripp |  36
 (1 row)
 ```
 
