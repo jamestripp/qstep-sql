@@ -6,5 +6,6 @@ services:
       POSTGRES_USER: qstep
       POSTGRES_PASSWORD: qstep
       POSTGRES_DB: qstep
+      POSTGRES_INITDB_ARGS: "--auth-host=md5 --auth-local=md5"
     ports:
       - "5432:5432"
