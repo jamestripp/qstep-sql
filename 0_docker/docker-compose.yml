@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgis/postgis
+    restart: always
+    environment:
+      POSTGRES_USER: qstep
+      POSTGRES_PASSWORD: qstep
+      POSTGRES_DB: qstep
+    ports:
+      - "5432:5432"
