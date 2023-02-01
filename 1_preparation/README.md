@@ -9,7 +9,9 @@ To prepare for the Workshop you should:
 
 Steps 1 to 3 cover the requirements for most of the workshop. You may wish to do these in advance if you have a slow internet connection.
 
-Deails for each step are below. Also, there are details of the datasets we use in this workshop at the bottom of this page. Below the data are installation instructions you can try if you cannot get Docker working, though these are much more complex and are to be considered out of date.
+Deails for each step are below.
+
+Additional information about the datasets and manual database installation instructions are [here](). The manual instructions are out of the date and far more involved. Please follow the Docker approach below.
 
 ## Install Docker
 
