@@ -11,7 +11,7 @@ Steps 1 to 3 cover the requirements for most of the workshop. You may wish to do
 
 Deails for each step are below.
 
-Additional information about the datasets and manual database installation instructions are [here](). The manual instructions are out of the date and far more involved. Please follow the Docker approach below.
+Additional information about the datasets and manual database installation instructions are [here](https://github.com/jamestripp/qstep-sql/blob/master/1_preparation/other_information.md). The manual instructions are out of the date and far more involved. Please follow the Docker approach below.
 
 ## Install Docker
 
