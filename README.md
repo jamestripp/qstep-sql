@@ -1,6 +1,6 @@
 # QSTEP Masterclass: Structured Query Language
 
-This repository contains materials from a QSTEP Masterclass on SQL designed and delivered by [James Tripp](https://www.warwick.ac.uk/jamestripp) on 25th of November 2021.
+This repository contains materials from a QSTEP Masterclass on SQL designed and delivered by James Tripp on 1st of February 2023.
 
 The structure of the day is as follows:
 
