@@ -65,15 +65,15 @@ Unfortunately, Docker Desktop does not provide a user interface option for this.
 
 1. Open up a terminal or powershell prompt. Type in cd followed by a space and then drag the 0_docker folder onto the terminal window. You should now see cd followed by the location of the 0_docker folder in full (see below).
 
-<img src="screenshots/powershell cd.png" width="80%"/>
+<img src="screenshots/powershell-cd.png" width="80%"/>
 
 2. Press enter. You have now changed the directory the terminal is in. To view the files in the directory type in ls and press enter. You should see two files docker-compose.yml and workshop_data.sql (like the below).
 
-<img src="screenshots/powershell ls.png" width="80%"/>
+<img src="screenshots/powershell-ls.png" width="80%"/>
 
 3. Type in docker compose up and press enter. You should see a bunch of text like the below. Congratulations, your database is now running :) The docker program is running a copy of the image, which is called a container, with the workshop data available. 
 
-<img src="screenshots/docker-compose-up.png" width="80%"/>
+<img src="screenshots/powershell-compose-up-1.png" width="80%"/>
 
 **Note** Please keep the terminal window open! If you close the windows then the container may stop. If the container does stop then follow steps 1-3 again.
 
