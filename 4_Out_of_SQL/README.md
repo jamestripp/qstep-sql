@@ -46,35 +46,20 @@ plot(
 
 Anyway, this is not an R course. We are just going to use R to connect to our database, extract and then process data.
 
-## Remote connection
-
-If you using a CIM server then you need to create an SSH tunnel. Open Powershell/Terminal and type in
-
-```bash
-ssh -N -L 5433:127.0.0.1:5432 username@servername.cim.warwick.ac.uk
-```
-
-where you replace username and servername with the value from [this page](https://warwick.ac.uk/fac/cross_fac/cim/people/academic-technology/qstep-sql/). When prompted also type in the password from that page and press enter.
-
-Nothing else should appear in that window. This indicates that you're connected to the server.
-
-What did you just do? The SSH tunnel means that any connection to port 5433 on your machine will be sent to the CIM server port 5432 (our PostgreSQL server). Essentially, R will be able to communicate with the CIM PostgreSQL server.
-
-If you are using a database on your own system then you do not need to run teh above command.
-
 ## RPostgreSQL
 
 R has a nice library for connecting to PostgreSQL called RPostgresql. To install, in RStudio run
 
 ```r
+install.packages(DBI)
 install.packages(RPostgreSQL)
 ```
 
 To connect to a database is pretty straightforward.
 
-If you are connecting to the CIM database
 
 ```r
+library(DBI)
 library(RPostgreSQL) 
 
 drv <- dbDriver("PostgreSQL")
@@ -82,27 +67,10 @@ drv <- dbDriver("PostgreSQL")
 con <- dbConnect(
   drv,
   dbname="qstep",
-  host="localhost",
-  port=5433,
-  user="your_username",
-  password="your_password"
-  )
-```
-
-If you are connecting to a local database
-
-```r
-library(RPostgreSQL) 
-
-drv <- dbDriver("PostgreSQL")
-
-con <- dbConnect(
-  drv,
-  dbname="qstep",
-  host="localhost",
+  host="127.0.0.1",
   port=5432,
-  user="your_username",
-  password="your_password"
+  user="qstep",
+  password="qstep"
   )
 ```
 
@@ -141,7 +109,7 @@ The my_result variable is a data frame (a table containing data). The following 
 ```r
 require(ggplot2)
 
-ggplot(my_result, aes(x = labor_force, y = land_area)) +
+ggplot(my_result, aes(x = labor, y = forest_area)) +
   geom_point() +
   stat_summary(fun.data = mean_cl_normal) + 
   geom_smooth(method = 'lm', formula = y~x)
@@ -163,7 +131,7 @@ We pass the st_read function our connection and the name of the table with geosp
 
 ```r
 require(sf)
-world_borders <- st_read(con, 'jamestripp_data')
+world_borders <- st_read(con, 'qstep')
 ```
 
 and you specify data from an SQL query too.
@@ -171,7 +139,7 @@ and you specify data from an SQL query too.
 ```r
 mydata_low_labor <- st_read(
     con,
-    query = "SELECT * FROM jamestripp_data WHERE area_classification = 'low area';"
+    query = "SELECT * FROM qstep WHERE area_classification = 'low area';"
 )
 ```
 
@@ -179,12 +147,6 @@ Nice choropleths can be created from the returned data
 
 ```r
 plot(world_borders[,c("pop2005", "geom")])
-```
-
-and
-
-```r
-plot(world_borders[,c("trade", "geom")])
 ```
 
 #### Your Turn
